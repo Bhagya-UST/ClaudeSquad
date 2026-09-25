@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReturnIQ - AI-Powered Retail Returns Intelligence</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .metric {
+            margin-bottom: 15px;
+        }
+
+        .metric-label {
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .metric-unit {
+            color: #666;
+            font-size: 0.5em;
+            margin-left: 5px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin: 5px 5px 5px 0;
+        }
+
+        .badge-critical {
+            background: #fee;
+            color: #c33;
+        }
+
+        .badge-high {
+            background: #ffd;
+            color: #cc0;
+        }
+
+        .badge-medium {
+            background: #dfd;
+            color: #080;
+        }
+
+        .section {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 15px;
+        }
+
+        .list-item {
+            padding: 15px;
+            border-left: 4px solid #667eea;
+            margin-bottom: 15px;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+
+        .list-item h4 {
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .list-item p {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .priority-critical {
+            border-left-color: #c33;
+        }
+
+        .priority-high {
+            border-left-color: #cc0;
+        }
+
+        .priority-medium {
+            border-left-color: #080;
+        }
+
+        .button-group {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-approve {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #218838;
+        }
+
+        .btn-reject {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-reject:hover {
+            background: #c82333;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .success {
+            background: #dfd;
+            color: #080;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            margin-top: 20px;
+        }
+
+        .chart {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+
+        .chart-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .chart-label {
+            min-width: 150px;
+            color: #666;
+        }
+
+        .chart-bar-fill {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 30px;
+            border-radius: 4px;
+            margin: 0 15px;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            margin-top: 50px;
+        }
+
+        .chat-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 400px;
+            max-height: 600px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            border-radius: 12px 12px 0 0;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header-title {
+            font-size: 1.1em;
+        }
+
+        .chat-close {
+            cursor: pointer;
+            font-size: 1.5em;
+            line-height: 1;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background: #f9f9f9;
+            max-height: 420px;
+        }
+
+        .chat-message {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-message.user {
+            justify-content: flex-end;
+        }
+
+        .chat-message.assistant {
+            justify-content: flex-start;
+        }
+
+        .message-bubble {
+            max-width: 85%;
+            padding: 12px 15px;
+            border-radius: 12px;
+            word-wrap: break-word;
+            line-height: 1.4;
+            font-size: 0.95em;
+        }
+
+        .message-bubble.user {
+            background: #667eea;
+            color: white;
+        }
+
+        .message-bubble.assistant {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .chat-input-area {
+            padding: 12px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95em;
+            font-family: inherit;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .chat-send {
+            padding: 10px 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .chat-send:hover {
+            background: #5568d3;
+        }
+
+        .chat-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.2s;
+            z-index: 999;
+        }
+
+        .chat-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .suggestions {
+            padding: 10px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .suggestion-btn {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 8px;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.85em;
+            transition: background 0.2s;
+        }
+
+        .suggestion-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .chat-container {
+                width: calc(100vw - 40px);
+                max-width: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 ReturnIQ</h1>
+            <p class="subtitle">AI-Powered Retail Returns Intelligence System</p>
+        </header>
+
+        <div id="app">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading ReturnIQ analysis...</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>ReturnIQ MVP • D3 Hackathon 2026</p>
+        </div>
+    </div>
+
+    <!-- Chat Widget -->
+    <button id="chatToggle" class="chat-toggle" title="Chat with ReturnIQ">💬</button>
+
+    <div id="chatContainer" class="chat-container hidden">
+        <div class="chat-header">
+            <span class="chat-header-title">🤖 ReturnIQ Assistant</span>
+            <span class="chat-close" onclick="toggleChat()">×</span>
+        </div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="suggestions" id="suggestions"></div>
+        <div class="chat-input-area">
+            <input
+                type="text"
+                class="chat-input"
+                id="chatInput"
+                placeholder="Ask about returns, trends, recommendations..."
+                onkeypress="handleChatKeypress(event)"
+            >
+            <button class="chat-send" onclick="sendChat()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        async function loadData() {
+            try {
+                const appDiv = document.getElementById('app');
+
+                const overviewRes = await fetch('/api/analysis/overview');
+                const overview = await overviewRes.json();
+
+                const trendsRes = await fetch('/api/analysis/trends');
+                const trendsData = await trendsRes.json();
+
+                const anomaliesRes = await fetch('/api/analysis/anomalies');
+                const anomaliesData = await anomaliesRes.json();
+
+                const recsRes = await fetch('/api/analysis/recommendations');
+                const recsData = await recsRes.json();
+
+                const sentimentRes = await fetch('/api/analysis/sentiment');
+                const sentimentData = await sentimentRes.json();
+
+                appDiv.innerHTML = buildDashboard(overview, trendsData, anomaliesData, recsData, sentimentData);
+            } catch (error) {
+                document.getElementById('app').innerHTML = `<div class="error">Error loading data: ${error.message}</div>`;
+            }
+        }
+
+        function buildDashboard(overview, trendsData, anomaliesData, recsData, sentimentData) {
+            let html = '';
+
+            html += `
+                <div class="dashboard">
+                    <div class="card">
+                        <h3>📊 Overview</h3>
+                        <div class="metric">
+                            <div class="metric-label">Total Returns</div>
+                            <div class="metric-value">${overview.total_returns}</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Analyzed</div>
+                            <div class="metric-value">${overview.analyzed}</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Avg Confidence</div>
+                            <div class="metric-value">${overview.avg_confidence}<span class="metric-unit">%</span></div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>⚠️ Alerts</h3>
+                        <div class="metric">
+                            <div class="metric-label">Churn Risks</div>
+                            <div class="metric-value">${overview.churn_risks}</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Fraud Suspects</div>
+                            <div class="metric-value">${overview.fraud_suspects}</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Trends Detected</div>
+                            <div class="metric-value">${overview.trends_detected}</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>📈 Sentiment</h3>
+                        <div class="metric">
+                            <div class="metric-label">Sentiment Distribution</div>
+                            ${Object.entries(overview.classifications || {}).map(([key, val]) =>
+                                `<div class="badge badge-medium">${key}: ${val}</div>`
+                            ).join('')}
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Churn Risk Count</div>
+                            <div class="metric-value">${sentimentData.churn_risk_count || 0}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            if (trendsData.trends && trendsData.trends.length > 0) {
+                html += `
+                    <div class="section">
+                        <h2>🔍 Detected Trends</h2>
+                        ${trendsData.trends.map(trend => `
+                            <div class="list-item">
+                                <h4>${trend.pattern}</h4>
+                                <p>
+                                    <strong>Count:</strong> ${trend.count} returns (${trend.percentage}%)<br>
+                                    <strong>Significance:</strong> ${trend.significance}<br>
+                                    <strong>Z-Score:</strong> ${trend.z_score}
+                                </p>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            if (anomaliesData.anomalies && anomaliesData.anomalies.length > 0) {
+                html += `
+                    <div class="section">
+                        <h2>🚨 Detected Anomalies</h2>
+                        ${anomaliesData.anomalies.map(anomaly => `
+                            <div class="list-item priority-${anomaly.severity}">
+                                <h4>${anomaly.category} <span class="badge badge-${anomaly.severity}">${anomaly.severity}</span></h4>
+                                <p>
+                                    <strong>Current Value:</strong> ${anomaly.value}<br>
+                                    <strong>Expected Value:</strong> ${anomaly.expected}<br>
+                                    <strong>Z-Score:</strong> ${anomaly.z_score}<br>
+                                    <strong>Description:</strong> ${anomaly.description}
+                                </p>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            if (recsData.recommendations && recsData.recommendations.length > 0) {
+                html += `
+                    <div class="section">
+                        <h2>💡 Recommendations</h2>
+                        ${recsData.recommendations.map(rec => `
+                            <div class="list-item priority-${rec.priority}">
+                                <h4>
+                                    ${rec.title}
+                                    <span class="badge badge-${rec.priority}">${rec.priority}</span>
+                                    ${rec.requires_review ? '<span class="badge badge-critical">🔍 NEEDS REVIEW</span>' : '<span class="badge badge-medium">✓ Auto-approved</span>'}
+                                </h4>
+                                <p>
+                                    <strong>Description:</strong> ${rec.description}<br>
+                                    <strong>Confidence:</strong> ${(rec.confidence * 100).toFixed(0)}%<br>
+                                    <strong>Estimated Impact:</strong> ${rec.impact}<br>
+                                    <strong>Required Action:</strong> ${rec.action}<br>
+                                    <strong>Status:</strong> ${rec.status}
+                                </p>
+                                ${rec.supporting_records && rec.supporting_records.length > 0 ? `
+                                    <p><strong>Supporting Evidence:</strong> ${rec.supporting_records.length} return records<br>
+                                    IDs: ${rec.supporting_records.join(', ')}</p>
+                                ` : ''}
+                                <div class="button-group">
+                                    <button class="btn-approve" onclick="approveRec('${rec.id}')">✓ Approve</button>
+                                    <button class="btn-reject" onclick="rejectRec('${rec.id}')">✗ Reject</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            return html;
+        }
+
+        async function approveRec(recId) {
+            try {
+                const res = await fetch('/api/recommendation/approve', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: recId })
+                });
+                if (res.ok) {
+                    alert(`Recommendation ${recId} approved!`);
+                }
+            } catch (error) {
+                console.error('Error approving recommendation:', error);
+            }
+        }
+
+        async function rejectRec(recId) {
+            try {
+                const res = await fetch('/api/recommendation/reject', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: recId })
+                });
+                if (res.ok) {
+                    alert(`Recommendation ${recId} rejected!`);
+                }
+            } catch (error) {
+                console.error('Error rejecting recommendation:', error);
+            }
+        }
+
+        // Chat functionality
+        document.getElementById('chatToggle').addEventListener('click', toggleChat);
+
+        function toggleChat() {
+            const container = document.getElementById('chatContainer');
+            container.classList.toggle('hidden');
+            if (!container.classList.contains('hidden')) {
+                loadSuggestions();
+                document.getElementById('chatInput').focus();
+            }
+        }
+
+        async function loadSuggestions() {
+            try {
+                const res = await fetch('/api/chat/suggestions');
+                const data = await res.json();
+                const suggestionsDiv = document.getElementById('suggestions');
+                suggestionsDiv.innerHTML = data.suggestions.map(q =>
+                    `<button class="suggestion-btn" onclick="sendChat('${q.replace(/'/g, "\\'")}')">${q}</button>`
+                ).join('');
+            } catch (error) {
+                console.error('Error loading suggestions:', error);
+            }
+        }
+
+        function handleChatKeypress(event) {
+            if (event.key === 'Enter') {
+                sendChat();
+            }
+        }
+
+        async function sendChat(message) {
+            const input = document.getElementById('chatInput');
+            const msg = message || input.value.trim();
+
+            if (!msg) return;
+
+            // Add user message to UI
+            const messagesDiv = document.getElementById('chatMessages');
+            messagesDiv.innerHTML += `
+                <div class="chat-message user">
+                    <div class="message-bubble user">${escapeHtml(msg)}</div>
+                </div>
+            `;
+
+            input.value = '';
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg })
+                });
+
+                if (!res.ok) {
+                    const error = await res.json();
+                    throw new Error(error.error || 'Chat failed');
+                }
+
+                const data = await res.json();
+
+                // Add assistant message to UI
+                messagesDiv.innerHTML += `
+                    <div class="chat-message assistant">
+                        <div class="message-bubble assistant">${data.message}</div>
+                    </div>
+                `;
+
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            } catch (error) {
+                messagesDiv.innerHTML += `
+                    <div class="chat-message assistant">
+                        <div class="message-bubble assistant" style="background: #fee; color: #c33;">
+                            Error: ${escapeHtml(error.message)}
+                        </div>
+                    </div>
+                `;
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Load data when page loads
+        window.addEventListener('load', loadData);
+    </script>
+</body>
+</html>

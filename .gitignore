@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.env
+*.csv
+.streamlit/
+.DS_Store
+node_modules/
+.venv/
+venv/

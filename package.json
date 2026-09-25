@@ -1,0 +1,16 @@
+{
+  "name": "returniq-vercel",
+  "version": "1.0.0",
+  "description": "ReturnIQ - AI-Powered Retail Returns Intelligence",
+  "main": "api/index.py",
+  "scripts": {
+    "dev": "python api/index.py",
+    "start": "python api/index.py"
+  },
+  "keywords": ["returns", "ai", "retail"],
+  "author": "ReturnIQ Team",
+  "license": "MIT",
+  "engines": {
+    "python": "3.11"
+  }
+}
