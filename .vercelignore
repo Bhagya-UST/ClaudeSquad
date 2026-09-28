@@ -1,0 +1,5 @@
+requirements.txt
+backend/
+docker-compose.yml
+Dockerfile*
+prometheus.yml
