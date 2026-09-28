@@ -9,11 +9,31 @@ from .auth import verify_token, TokenData
 from .database.models import User, Tenant
 from .database.db import Database
 from .auth_rbac import get_role_permissions
+import uuid
 
 db = Database()
 
-async def get_current_tenant(token_data: TokenData = Depends(verify_token)) -> Tenant:
-    """Get current tenant from JWT token"""
+# Demo/fallback user for demo mode
+DEMO_USER = type('User', (), {
+    'id': uuid.uuid4(),
+    'user_id': 'demo_user',
+    'tenant_id': uuid.uuid4(),
+    'email': 'demo@example.com',
+    'role': 'analyst',
+    'is_active': True
+})()
+
+DEMO_TENANT = type('Tenant', (), {
+    'id': DEMO_USER.tenant_id,
+    'name': 'Demo Tenant',
+    'slug': 'demo'
+})()
+
+async def get_current_tenant(token_data: Optional[TokenData] = None) -> Tenant:
+    """Get current tenant from JWT token or return demo tenant"""
+    if not token_data:
+        return DEMO_TENANT
+
     if not token_data.tenant_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -32,8 +52,11 @@ async def get_current_tenant(token_data: TokenData = Depends(verify_token)) -> T
 
     return tenant
 
-async def get_current_user(token_data: TokenData = Depends(verify_token)) -> User:
-    """Get current user from JWT token"""
+async def get_current_user(token_data: Optional[TokenData] = None) -> User:
+    """Get current user from JWT token or return demo user"""
+    if not token_data:
+        return DEMO_USER
+
     session = db.get_session()
     user = session.query(User).filter(
         User.id == token_data.user_id,

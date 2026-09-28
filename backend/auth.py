@@ -139,9 +139,11 @@ def create_access_token(data: TokenData, expires_delta: Optional[timedelta] = No
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-def verify_token(authorization: Optional[str] = Header(None)) -> TokenData:
-    """Verify JWT token and return token data with tenant info"""
+def verify_token(authorization: Optional[str] = Header(None)) -> Optional[TokenData]:
+    """Verify JWT token and return token data with tenant info. Returns None for demo mode."""
     if not authorization:
+        if DEMO_MODE:
+            return None  # Allow demo mode without auth
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Missing authorization header",
